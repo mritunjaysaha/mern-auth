@@ -5,8 +5,8 @@ const jwt = require("jsonwebtoken");
 const secretOrkey = process.env.secretOrKey;
 
 // Load input validation
-const { validateRegisterInput } = require("../../validation/register");
-const { validateLoginInput } = require("../../validation/login");
+const validateRegisterInput = require("../../validation/register");
+const validateLoginInput = require("../../validation/login");
 
 // Load user model
 const User = require("../../models/user");
@@ -17,6 +17,8 @@ const User = require("../../models/user");
  * @access public
  */
 router.post("/register", (req, res) => {
+    console.log("/register");
+    console.log(req.body);
     // form validation
     const { errors, isValid } = validateRegisterInput(req.body);
 

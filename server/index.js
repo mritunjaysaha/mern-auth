@@ -7,6 +7,10 @@ const { connectDB } = require("./config/db");
 // initialize server
 const app = express();
 
+// initialize middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ extended: false }));
+
 // connecting database
 connectDB();
 
@@ -17,9 +21,6 @@ app.use(passport.initialize());
 require("./config/passport")(passport);
 // routes
 app.use("/api/users", users);
-
-// initialize middleware
-app.use(express.json({ extended: false }));
 
 // set the default end point
 app.get("/", (req, res) => res.send("Server is up and running"));
