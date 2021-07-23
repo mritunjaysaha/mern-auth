@@ -7,3 +7,7 @@
     list-style: none;
     text-decoration: none;
 }
+
+html {
+    font-size: 10px;
+}
