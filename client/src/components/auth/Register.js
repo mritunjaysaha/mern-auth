@@ -1,7 +1,11 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
+import classnames from "classnames";
 
-export default function Register() {
+function Register(props) {
     const [user, setUser] = useState({
         name: "",
         email: "",
@@ -9,6 +13,18 @@ export default function Register() {
         password2: "",
         errors: {},
     });
+
+    useEffect(() => {
+        if (props.auth.isAuthenticated) {
+            props.history.push("/dashboard");
+        }
+    }, []);
+
+    // useEffect((nextProps) => {
+    //     if (nextProps.errors) {
+    //         setUser((user) => ({ ...user, errors: nextProps.errors }));
+    //     }
+    // }, []);
 
     function handleChange(e) {
         setUser((user) => ({ ...user, [e.target.id]: e.target.value }));
@@ -25,6 +41,9 @@ export default function Register() {
         };
 
         console.log({ newUser });
+        console.log({ props });
+
+        props.registerUser(newUser, props.history);
     }
 
     return (
@@ -51,6 +70,9 @@ export default function Register() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="name">Name</label>
+                            <span style={{ color: "red" }}>
+                                {user.errors.name}
+                            </span>
                         </div>
                         <div>
                             <input
@@ -60,6 +82,9 @@ export default function Register() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="email">email</label>
+                            <span style={{ color: "red" }}>
+                                {user.errors.email}
+                            </span>
                         </div>
                         <div>
                             <input
@@ -69,6 +94,9 @@ export default function Register() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="password">password</label>
+                            <span style={{ color: "red" }}>
+                                {user.errors.password}
+                            </span>
                         </div>
                         <div>
                             <input
@@ -78,6 +106,9 @@ export default function Register() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="password2">confirm password</label>
+                            <span style={{ color: "red" }}>
+                                {user.errors.password2}
+                            </span>
                         </div>
                         <div>
                             <button
@@ -98,3 +129,18 @@ export default function Register() {
         </div>
     );
 }
+
+Register.propTypes = {
+    registerUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+    auth: state.auth,
+    errors: state.errors,
+});
+
+export default connect(mapStateToProps, {
+    registerUser,
+})(withRouter(Register));

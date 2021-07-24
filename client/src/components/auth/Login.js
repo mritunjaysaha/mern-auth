@@ -1,8 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/authActions";
+import classnames from "classnames";
 
-export default function Login() {
+function Login(props) {
     const [user, setUser] = useState({ email: "", password: "", errors: {} });
+
+    useEffect(() => {
+        if (props.auth.isAuthenticated) {
+            props.history.push("/dashboard");
+        }
+    }, []);
+
+    // useEffect((nextProps) => {
+    //     if (nextProps.auth.isAuthenticated) {
+    //         props.history.push("/dashboard");
+    //     }
+
+    //     if (nextProps.errors) {
+    //         setUser((user) => ({ ...user, errors: nextProps.errors }));
+    //     }
+    // }, []);
 
     function handleChange(e) {
         setUser((user) => ({ ...user, [e.target.id]: e.target.value }));
@@ -19,6 +39,8 @@ export default function Login() {
         };
 
         console.log({ userData });
+
+        props.loginUser(userData);
     }
 
     return (
@@ -45,6 +67,10 @@ export default function Login() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="email">email</label>
+                            <span className="red-text">
+                                {user.errors.email}
+                                {user.errors.emailnotfound}
+                            </span>
                         </div>
                         <div>
                             <input
@@ -54,6 +80,10 @@ export default function Login() {
                                 onChange={handleChange}
                             />
                             <label htmlFor="password">password</label>
+                            <span className="red-text">
+                                {user.errors.password}
+                                {user.errors.passwordincorrect}
+                            </span>
                         </div>
                         <div>
                             <button
@@ -74,3 +104,16 @@ export default function Login() {
         </div>
     );
 }
+
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+    auth: state.auth,
+    errors: state.errors,
+});
+
+export default connect(mapStateToProps, { loginUser })(Login);
